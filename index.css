@@ -36,10 +36,6 @@ a:hover {
   color: maroon;
 }
 
-p {
-  line-height: 1.4em !important;
-}
-
 .head {
   font-weight: 900;
   font-style: italic;
@@ -59,6 +55,8 @@ p {
   position: absolute;
   width: 100%;
   height: auto;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
 
 p {
@@ -73,35 +71,16 @@ p {
   background-color: white;
 }
 
-#mainContent,
 .response-content {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s ease-in-out;
-  z-index: 100;
-}
-
-#mainContent.active {
-  transform: translateX(0);
-}
-
-#mainContent.inactive {
-  transform: translateX(-100%);
-}
-
-.response-content {
-  transform: translateX(100%);
+  display: none;
   padding: 2vw;
   overflow-y: auto;
   max-width: 30vw;
   height: 85vh;
-  margin: 5vh auto;
-  left: 0;
-  right: 0;
-  transition: transform 0.5s ease-in-out;
+  position: fixed;
+  right: 2vw;
+  top: 5vh;
+  z-index: 9999;
 }
 
 .response-content p {
@@ -109,43 +88,80 @@ p {
 }
 
 .response-content.active {
-  transform: translateX(0);
-}
-
-.response-content.inactive {
-  transform: translateX(100%);
+  display: block;
 }
 
 .response-content h2,
 .response-content h3,
 .response-content p {
   max-width: 100%;
-}
-
-.back-button {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #f0f0f0;
-  color: black;
-  text-decoration: none;
-  border-radius: 5px;
+  line-height: 1.2em;
 }
 
 .toggle-button {
-  border: none;
-  color: white;
+  display: block;
+  border: 1px solid black;
+  padding: 0.5vw 1vw;
+  color: black;
+  background-color: white;
   font-size: 1.2em;
-
   font-family: "joly-text", sans-serif;
   font-weight: 200;
   font-style: italic;
-
-  transition: background-color 0.3s ease-in-out;
-  margin-top: 10px;
+  transition: all 0.3s ease-in-out;
+  white-space: nowrap;
 }
 
 .toggle-button:hover {
   cursor: pointer;
   background-color: maroon;
+}
+
+.lecture-content {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#nav li a.selected {
+  margin-left: 20px;
+  color: maroon;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+#nav li a.selected::before {
+  content: ">";
+  margin-right: 5px;
+}
+
+#toggleContainer {
+  position: fixed;
+  left: -200px;
+  top: 50vh;
+  transform: translateY(-50%);
+  z-index: 1000;
+  transition: left 0.8s ease-in-out;
+  display: none;
+  background-color: white;
+}
+
+#toggleContainer.visible {
+  left: 5vw;
+}
+
+.image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#imageContainer2 {
+  display: none;
 }

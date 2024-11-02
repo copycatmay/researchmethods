@@ -1,9 +1,16 @@
 $(document).ready(function () {
   console.log("Script loaded");
 
-  // Wait for all images to load before positioning them
+  // Add this line
+  $("#toggleContainer").hide();
+
+  // only hide image container once
+  $("#imageContainer").hide();
+
+  // load images in background
   let imagePromises = $(".random-image")
     .map(function () {
+      $(this).css("opacity", "0"); // hide images initially
       return new Promise((resolve, reject) => {
         if (this.complete) {
           resolve();
@@ -18,6 +25,7 @@ $(document).ready(function () {
   Promise.all(imagePromises)
     .then(() => {
       console.log("all images loaded successfully");
+      $(".random-image").css("opacity", "1"); // show images smoothly
       positionImages();
     })
     .catch((error) => {
@@ -27,48 +35,74 @@ $(document).ready(function () {
   function positionImages() {
     console.log("positionImages called");
     $(".random-image").each(function () {
-      let x = Math.random() * 65; // use vw units
-      let y = Math.random() * 40; // use vh units
+      let x = Math.random() * 65;
+      let y = Math.random() * 40;
       let zIndex = Math.floor(Math.random() * 100);
-      let sizeVariation = 0.8 + Math.random() * 0.4; // 80% to 120% of original size
-      let newWidth = 15 * sizeVariation; // 15vw is the original width
+      let sizeVariation = 0.8 + Math.random() * 0.4;
+      let newWidth = 15 * sizeVariation;
 
-      let $container = $("<div>")
-        .addClass("image-container")
-        .css({
-          position: "absolute",
-          left: x + "vw",
-          top: y + "vh",
-          zIndex: zIndex,
-          width: newWidth + "vw",
-        });
-
-      $(this)
-        .css({
-          width: "100%",
-          height: "auto",
-          transform: "scale(" + sizeVariation + ")",
-        })
-        .wrap($container);
-
-      let $caption = $("<div>")
-        .addClass("image-caption")
-        .text($(this).data("caption"));
-      $container.append($caption);
+      $(this).css({
+        position: "absolute",
+        left: x + "vw",
+        top: y + "vh",
+        zIndex: zIndex,
+        width: newWidth + "vw",
+        height: "auto",
+        transform: "scale(" + sizeVariation + ")",
+      });
     });
   }
 
   function showResponse(responseId) {
     console.log("showResponse called with id:", responseId);
-    $("#mainContent").removeClass("active").addClass("inactive");
-    $(".response-content").removeClass("active");
-    $("#" + responseId).addClass("active");
+
+    // check if clicking already selected response
+    if ($(`#nav a[data-response="${responseId}"]`).hasClass("selected")) {
+      // deselect everything and show main
+      $("#nav a").removeClass("selected");
+      $(".response-content").hide().removeClass("active");
+      $("#imageContainer").hide();
+      $("#toggleContainer").removeClass("visible").hide();
+      $("#mainContent").removeClass("inactive").show().addClass("active");
+      return;
+    }
+
+    // normal selection flow
+    $("#nav a").removeClass("selected");
+    $(`#nav a[data-response="${responseId}"]`).addClass("selected");
+
+    $(".response-content").hide().removeClass("active");
+    $("#" + responseId)
+      .show()
+      .addClass("active");
+
+    if (responseId === "response1") {
+      $("#imageContainer").show();
+      $("#imageContainer2").hide();
+      positionImages();
+    } else if (responseId === "response2") {
+      $("#imageContainer").hide();
+      $("#imageContainer2").show();
+      positionImages();
+    } else {
+      $("#imageContainer, #imageContainer2").hide();
+    }
+    $("#toggleContainer").show().addClass("visible");
   }
 
   function showMain() {
     console.log("showMain called");
-    $("#mainContent").removeClass("inactive").addClass("active");
-    $(".response-content").removeClass("active");
+
+    // remove selected state when going back to main
+    $("#nav a").removeClass("selected");
+
+    // existing animations
+    $(".response-content").hide().removeClass("active");
+    $("#mainContent").removeClass("inactive").show().addClass("active");
+
+    // Add this line to hide toggle container when returning to main
+    $("#toggleContainer").removeClass("visible").hide();
+    $("#imageContainer").hide();
   }
 
   positionImages();
@@ -91,14 +125,20 @@ $(document).ready(function () {
   // Add this new code for the toggle button functionality
   $("#toggleImages").click(function () {
     let $button = $(this);
-    let $images = $(".image-container");
+    let selectedResponse = $("#nav a.selected").data("response");
+    let $images =
+      selectedResponse === "response1"
+        ? $("#imageContainer")
+        : $("#imageContainer2");
 
     if ($images.is(":visible")) {
       $images.hide();
-      $button.text("Show Images");
-    } else {
+    } else if (
+      selectedResponse === "response1" ||
+      selectedResponse === "response2"
+    ) {
       $images.show();
-      $button.text("Hide Images");
+      positionImages();
     }
   });
 });

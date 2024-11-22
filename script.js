@@ -108,6 +108,11 @@ $(document).ready(function () {
   positionImages();
 
   $("#nav a").on("click", function (e) {
+    // Skip if this is an external link
+    if ($(this).hasClass("external-link")) {
+      return true; // Allow default link behavior
+    }
+
     console.log("Nav link clicked");
     e.preventDefault();
     let responseId = $(this).data("response");
